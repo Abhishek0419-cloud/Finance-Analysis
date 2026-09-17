@@ -285,7 +285,7 @@ The transactions page contains:
 
 ### Transactions
 
-![Finance Analysis Dashboard - Transactions](transaction.png)
+![Finance Analysis Dashboard - Transactions](transactions.png)
 
 ---
 
