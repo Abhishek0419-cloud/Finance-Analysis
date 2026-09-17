@@ -281,11 +281,11 @@ The transactions page contains:
 
 ### Overview Analysis
 
-![Finance Analysis Dashboard - Overview](images/overview.png)
+![Finance Analysis Dashboard - Overview](overview.png)
 
 ### Transactions
 
-![Finance Analysis Dashboard - Transactions](images/transactions.png)
+![Finance Analysis Dashboard - Transactions](transaction.png)
 
 ---
 
