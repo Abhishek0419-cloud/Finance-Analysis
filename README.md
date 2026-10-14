@@ -1,306 +1,66 @@
-# Finance Analysis Dashboard | Power BI
+# Finance Analysis Dashboard (Power BI)
 
-An interactive Finance Analytics Dashboard built in Power BI to analyze financial transactions, customer behavior, transaction performance, fees, taxes, and customer segments.
+Interactive two-page Power BI dashboard on 50,000 banking transactions (Jan 2023 – Apr 2026). It tracks transaction amount, volume, fees and tax, with year-over-year comparison, and breaks results down by customer segment, state, transaction type, status and gender. A second page lists the underlying transactions, reached by drill-through.
 
-The project was developed based on business requirements focused on monitoring transaction performance and providing detailed views for further analysis.
+**Tools:** Power BI (Power Query, DAX, drill-through, field parameters)
 
----
+## Dashboard
 
-## 📊 Project Overview
+**Overview page:** KPI cards with YoY change, amount by month, amount by transaction status, amount by customer segment, amount by state (top 10), a heat-map table by transaction type, and amount by gender.
 
-The objective of this project is to provide a centralized dashboard for analyzing financial transactions across different years, customer segments, states, occupations, merchant categories, transaction types, and customer demographics.
+![Overview](images/overview.png)
 
-The dashboard contains two main pages:
+**Transactions page (drill-through):** transaction-level grid with customer, type, status, amount, fees and tax. Right-click any visual on the overview and drill through to see the records behind it.
 
-- **Overview Analysis** – High-level financial and transaction analysis
-- **Transactions** – Detailed transaction-level view with drillthrough functionality
+![Transactions](images/transactions.png)
 
-The dashboard focuses on transaction growth, monthly trends, transaction status, customer segments, state-wise performance, transaction types, gender-based analysis, fees, and taxes.
+**Filters:** Year (single select), Dynamic Metric, Occupation and Merchant Category. The Dynamic Metric slicer switches the month, segment and state charts between Total Amount, Total Transactions, Total Fees and Total Tax.
 
----
+## Key findings (2025)
 
-## 🎯 Business Requirements
+- **Total amount ₹137.53M** across 14,944 transactions (+1.4% amount, -0.6% transactions vs 2024). Volume has been flat for three years: ₹137.07M (2023), ₹135.62M (2024), ₹137.53M (2025).
+- **Three transaction types make up 70% of the amount:** Loan EMI (₹40.0M), Transfer (₹36.2M) and Deposit (₹20.3M).
+- **Retail customers contribute 55% of the amount** (₹75.7M), followed by Premium (18.6%) and SME (15.4%). Wealth is the smallest at 4.4%.
+- **Maharashtra is the top state with 15.9%** of the amount; the top 3 states (Maharashtra, Karnataka, Gujarat) account for 38.6%.
+- **Gender split is close to even:** Female 52.8%, Male 47.2% of the amount.
+- **About 14.6% of the amount is Failed or Pending** across the full period (Failed 10.4%, Pending 4.2%). Only 85.4% (₹389.0M of ₹455.5M) is successful.
 
-The dashboard was designed to address the following business requirements:
+## Data
 
-- Monitor overall transaction and financial performance
-- Analyze monthly transaction trends
-- Compare successful, failed, and pending transactions
-- Analyze customer segment contribution
-- Compare transaction performance across states
-- Analyze transaction types
-- Track fees and taxes
-- Understand customer demographics
-- Analyze transaction patterns using interactive filters
-- Provide detailed transaction-level information
+| Table | Rows | Description |
+|---|---|---|
+| `finance_transactions` | 50,000 | Date, customer, type, channel, merchant category, amount, fees, tax, status, fraud flag and risk score |
+| `customers` | 5,000 | Name, gender, occupation, segment, state, income, join date (3,983 customers have transactions) |
 
----
+Model: `customers` (1) to `finance_transactions` (many) on `customer_id`, a `Calendar` table for time intelligence and a `Dynamic Metric` field-parameter table.
 
-## 📌 Key Performance Indicators
+## Data cleaning (Power Query)
 
-The dashboard includes the following KPIs:
+- Removed **69 duplicate rows** (same `transaction_id`): 50,069 to 50,000.
+- Fixed channel typo `M@bile App` to `Mobile App` (765 rows) and trimmed text.
+- Standardised currency to upper case and set data types (including dates).
+- Converted 8 negative amounts to positive with `Number.Abs`. These are treated as data-entry issues; the total is small (₹71.6K).
+- Filled 24 missing fee values with ₹14.52, the overall average fee.
+- Merged the misspelled `fisrt_name` and `second_name` columns into `Full Name`.
 
-- **Total Amount**
-- **Total Transactions**
-- **Average Transaction Value**
-- **Total Fees**
-- **Total Tax**
+## DAX highlights
 
-These KPIs provide a quick overview of overall transaction activity and financial performance.
+- Measures for Total Amount, Total Transactions, Avg Transaction, Total Fees and Total Tax.
+- Previous-year and YoY measures using `SAMEPERIODLASTYEAR`. They return blank unless exactly one year is selected (`HASONEVALUE`), so partial or multi-year selections do not show misleading growth.
+- A field parameter for the dynamic metric, plus dynamic titles driven by the selected metric and year.
 
----
+## Things to know
 
-## 🎛️ Interactive Filters
+- **Total Amount, Fees and Tax include Failed and Pending transactions.** Fees and tax are also recorded on failed transactions (about 10% of total fees). Read the cards as gross values, and use the status chart for successful amounts only.
+- **Deposits, refunds and interest credits are added together with withdrawals and EMIs**, so Total Amount means gross transaction value, not net flow.
+- **The data looks synthetic.** For example, 18.7% of transactions happen before the customer's join date, so tenure-based analysis is not reliable.
+- 2026 contains only Jan–Apr. The Year slicer compares it with the same months of 2025.
+- 630 transactions (1.26%, ₹5.97M) are flagged as fraud, and 548 of them have a Success status. The fraud flag and risk score are in the data but are not yet used in the dashboard.
+- Data is loaded from static CSV files, so the dashboard is not real-time. To refresh, place the CSVs in a folder and update the file path in Power Query (Transform data, Source).
 
-The dashboard allows users to filter the analysis using:
+## Repository contents
 
-- **Year**
-- **Dynamic Measure**
-- **Occupation**
-- **Merchant Category**
-
-These filters allow different parts of the dashboard to be explored based on the selected criteria.
-
----
-
-## 🔄 Dynamic Metric Analysis
-
-A dynamic metric selector was created to allow selected visuals to switch between different measures.
-
-The available metrics include:
-
-- Total Amount
-- Total Fees
-- Total Tax
-- Total Transactions
-
-This allows the same visual to be used for different types of financial analysis without creating separate charts for every metric.
-
----
-
-## 📈 Dashboard Analysis
-
-### 1. Monthly Trend Analysis
-
-An area chart is used to analyze the selected transaction metric over time.
-
-This helps identify changes in transaction activity across different months.
-
-### 2. Transaction Status Analysis
-
-A donut chart compares transaction amounts based on transaction status:
-
-- Success
-- Failed
-- Pending
-
-This provides a view of how transaction amounts are distributed across different transaction outcomes.
-
-### 3. Customer Segment Analysis
-
-A horizontal bar chart compares transaction amounts across customer segments:
-
-- Retail
-- Premium
-- SME
-- Corporate
-- Wealth
-
-This helps analyze the contribution of different customer groups.
-
-### 4. State-wise Analysis
-
-A horizontal bar chart compares transaction amounts across different states.
-
-This provides a geographical view of transaction performance.
-
-### 5. Transaction Type Analysis
-
-A detailed table provides analysis by transaction type using:
-
-- Amount
-- Fees
-- Tax
-- Transaction Count
-
-The transaction types include:
-
-- Bill Payment
-- Card Payment
-- Deposit
-- Fee Charge
-- Interest Credit
-- Investment
-- Loan EMI
-- Refund
-- Transfer
-- Withdrawal
-
-### 6. Gender Analysis
-
-A donut chart compares transaction amount contribution by gender.
-
-This provides an additional demographic view of transaction activity.
-
----
-
-## 🔎 Detailed Transactions
-
-The second dashboard page provides a detailed transaction-level view.
-
-The table includes information such as:
-
-- Transaction ID
-- Transaction Date
-- Customer Name
-- Transaction Type
-- Transaction Status
-- Gender
-- Customer Segment
-- State
-- Total Amount
-- Total Fees
-- Total Tax
-
-The page also supports **drillthrough navigation**, allowing the user to move from the overview analysis to detailed transaction records.
-
----
-
-## 🗂️ Dataset
-
-The project uses two datasets.
-
-### Finance Transactions
-
-The transaction dataset contains fields including:
-
-- Transaction ID
-- Transaction Date
-- Account ID
-- Customer ID
-- Transaction Type
-- Channel
-- Merchant Category
-- Amount
-- Fee Amount
-- Tax Amount
-- Currency
-- Transaction Status
-- Fraud Indicator
-- Risk Score
-- Reference Number
-
-### Customers
-
-The customer dataset contains fields including:
-
-- Customer ID
-- First Name
-- Second Name
-- Gender
-- Date of Birth
-- City
-- State
-- Occupation
-- Customer Segment
-- Annual Income
-- Join Date
-
-The datasets are connected using **Customer ID**.
-
----
-
-## 🧹 Data Preparation
-
-Power Query was used for data preparation before building the dashboard.
-
-The transaction and customer datasets were combined through the Power BI data model to allow transaction performance to be analyzed alongside customer information such as:
-
-- Customer Segment
-- Occupation
-- Gender
-- State
-- Merchant Category
-
----
-
-## 🧮 DAX
-
-DAX measures were used to calculate the main dashboard metrics and support the interactive analysis.
-
-The dashboard uses measures for:
-
-- Total Amount
-- Total Transactions
-- Average Transaction Value
-- Total Fees
-- Total Tax
-- Dynamic Metric Selection
-
----
-
-## 🛠️ Tools & Technologies
-
-- **Power BI Desktop**
-- **Power Query**
-- **DAX**
-- **CSV**
-
----
-
-## 📑 Dashboard Structure
-
-### Page 1 — Overview Analysis
-
-The overview page contains:
-
-- KPI cards
-- Monthly trend analysis
-- Customer segment analysis
-- State-wise analysis
-- Transaction status analysis
-- Gender analysis
-- Transaction type analysis
-- Interactive slicers
-- Dynamic metric selection
-
-### Page 2 — Transactions
-
-The transactions page contains:
-
-- Detailed transaction records
-- Customer information
-- Transaction information
-- Financial metrics
-- Drillthrough functionality
-- Navigation back to the overview page
-
----
-
-## 🖼️ Dashboard Preview
-
-### Overview Analysis
-
-![Finance Analysis Dashboard - Overview](overview.png)
-
-### Transactions
-
-![Finance Analysis Dashboard - Transactions](transactions.png)
-
----
-
-## ❓ Business Questions Addressed
-
-The dashboard helps answer questions such as:
-
-- What is the total transaction amount?
-- How many transactions were performed?
-- What is the average transaction value?
-- How much fee and tax were generated?
-- How does transaction activity change over time?
-- How are transaction amounts distributed by status?
-- How do different customer segments contribute to transaction value?
-- How does transaction activity vary across states?
-- How do transaction types compare based on amount, fees, tax, and transaction count?
-- How does transaction activity differ by gender?
-- What are the underlying details of individual transactions?
+- `Finance_Analysis.pbix`: Power BI report
+- `finance_transactions.csv`, `customers.csv`: source data
+- `Business_Requirements.docx`: dashboard requirements
+- `images/`: dashboard screenshots
