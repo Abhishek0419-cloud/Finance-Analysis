@@ -63,4 +63,5 @@ Model: `customers` (1) to `finance_transactions` (many) on `customer_id`, a `Cal
 - `Finance_Analysis.pbix`: Power BI report
 - `finance_transactions.csv`, `customers.csv`: source data
 - `Business_Requirements.docx`: dashboard requirements
-- `images/`: dashboard screenshots
+- `overview.png`: dashboard screenshot 
+- `transactions.png`: dashboard screenshot
