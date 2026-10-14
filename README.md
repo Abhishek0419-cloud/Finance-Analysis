@@ -8,11 +8,11 @@ Interactive two-page Power BI dashboard on 50,000 banking transactions (Jan 2023
 
 **Overview page:** KPI cards with YoY change, amount by month, amount by transaction status, amount by customer segment, amount by state (top 10), a heat-map table by transaction type, and amount by gender.
 
-![Overview](images/overview.png)
+![Overview](overview.png)
 
 **Transactions page (drill-through):** transaction-level grid with customer, type, status, amount, fees and tax. Right-click any visual on the overview and drill through to see the records behind it.
 
-![Transactions](images/transactions.png)
+![Transactions](transactions.png)
 
 **Filters:** Year (single select), Dynamic Metric, Occupation and Merchant Category. The Dynamic Metric slicer switches the month, segment and state charts between Total Amount, Total Transactions, Total Fees and Total Tax.
 
